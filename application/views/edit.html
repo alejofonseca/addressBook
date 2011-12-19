@@ -1,0 +1,80 @@
+<script type="text/javascript">
+$(document).ready(function(){
+
+	$("#editForm").validate({
+		debug: false,
+		rules: {
+			name: "required",
+			last_name: "required",
+			city: "required",
+			state: "required",
+			zip: "required"
+		},
+		messages: {
+			name: "Please enter a name",
+			last_name: "Please type a last name",
+			city: "Please enter a city",
+			state: "State is required",
+			zip: "Enter zip code"
+		},
+		submitHandler: function(form) {
+
+			// Create arrays with form data
+			var textNamesValues = {'fields' : []};
+			$("input:text").each(function(){
+				textNamesValues['fields'].push($(this).attr("name")+','+$(this).val());
+			});
+
+			var interests = {'fields' : []};
+			$(":checked").each(function(){
+				interests['fields'].push($(this).val());
+			});
+
+			// Create data for ajax
+			var data = {'viewName': 'usrProfile',
+						'viewFormat': 'html',
+						'viewVars': {'usrProfileAction': 'edit',
+									 'contactId': $("#contactId").val(),
+									 'textNamesValues': textNamesValues['fields'],
+									 'interests': interests['fields']}};
+		
+			var dataString = JSON.stringify(data);
+
+//alert(dataString);
+//return false;
+	
+			$.post(
+				'application/controllers/controller.php',
+				{data: dataString},
+				function(view) {
+					// Show usrProfile
+					$("#contents").empty();
+					$("#contents").html(view.viewContent).show();
+				},
+				'json'
+			);
+		}
+	});
+	
+	$("#cancel").click(function(){
+		var data = {'viewName': 'usrProfile',
+					'viewFormat': 'html',
+					'viewVars': {'usrProfileAction': 'cancel'}};
+	
+		var dataString = JSON.stringify(data);
+			
+		$.post(
+			'application/controllers/controller.php',
+			{data: dataString},
+			function(view){
+				// Show usrProfile
+				$("#contents").empty();
+				$("#contents").html(view.viewContent).show();
+			},
+			'json'
+		);
+	});
+});
+</script>
+
+{edit_form}

@@ -1,0 +1,72 @@
+<script type="text/javascript">
+$(document).ready(function(){
+
+	$("#session").empty();
+	
+	$("#login").click(function(){
+		var data = {'viewName': 'usrProfile',
+					'viewFormat': 'html',
+					'viewVars': {'usrProfileAction': 'login',
+								 'usrname': $("#usrname").val(),
+								 'password': $("#password").val()}};
+
+		var dataString = JSON.stringify(data);
+
+		$.post(
+			'application/controllers/controller.php',
+			{data: dataString},
+			function(view){
+				if( view.viewContent == 0  ){
+					$("#errorMsg").html("Username/password error. Please try again.").show();
+					$("#errorMsg").addClass("error");
+				}else{
+					// Shows usrname and logout button
+					$("#session").html('Username: <b>'+$("#usrname").val()+'</b> - ').show();
+					$("#session").append('<a href="#" rel="logout">Logout</a>').show();
+
+					// Shows view contents
+					$("#contents").empty();
+					$("#contents").html(view.viewContent).show();
+					
+					$("a[rel=logout]").click(function(){
+						var data = {'viewName': 'index',
+									'viewFormat': 'html',
+									'viewVars': {'logout': 1}};
+						
+						var dataString = JSON.stringify(data);
+	
+						$.post(
+							'application/controllers/controller.php',
+							{data: dataString},
+							function(view){
+								$("#contents").empty();
+								$("#contents").html(view.viewContent).show();
+							},
+							'json'
+						);
+					});
+				}
+			},
+			'json'
+		);
+	});
+});
+</script>
+
+<p align="justify">This application was built in order to fulfill the requirements for a software
+developer position at <a target="_blank" href="http://www.mesaenlinea.com">Mesaenlinea</a>.
+It is a small address book that allows users to log in and create, edit and delete
+their contacts, which are saved into a database. JQuery was used to load the view files, 
+PHP as the server language and MySql as the database engine. </p>
+
+<p>The sample usernames to log in are <b>demo1</b> and <b>demo2</b>, which share the
+same password <b>01123</b> (first 5 Fibonacci numbers).</p>
+
+<div id="errorMsg"></div>
+
+<p>Username: <input type="text" name="usrname" id="usrname" size="10" value="">
+<br /><br />
+Password: <input type="password" name="password" id="password" size="8" value="">
+<br /><br />
+<input type="button" id="login" value="Log In" />
+</p>

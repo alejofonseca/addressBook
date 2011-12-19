@@ -1,0 +1,130 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	
+	// Hide div.edit
+	$("#edit").hide();
+
+	// Enable table sort
+	$("#contactList").tablesorter();
+
+	// Event of "button" class
+	buttonEvent();
+
+	$("a[rel=interest]").click(function(){
+		
+		$("a[rel=interest]").removeClass("selected");	
+		$(this).addClass("selected");
+		
+		var data = {'viewName': 'usrProfile',
+					'viewFormat': 'html',
+					'viewVars': {'usrProfileAction': 'sort',
+								 'interestId': this.href.replace(/^.*#/, '')}};
+		
+		var dataString = JSON.stringify(data);
+
+		$.post(
+			'application/controllers/controller.php',
+			{data: dataString},
+			function(view){
+				$("#contact_list").empty();
+				$("#contact_list").html(view.viewContent).show();
+
+				// Enable table sort
+				$("#contactList").tablesorter();
+
+				// "button" class event.
+				buttonEvent();
+			},
+			'json'
+		);
+	});
+});
+
+function buttonEvent()
+{
+	$(".button").click(function(){
+		if( this.id.substring(0,1) == 'e' ){
+
+			// Edit button was pressed
+			var data = {'viewName': 'edit',
+						'viewFormat': 'html',
+						'parentClass': 'usrProfile',
+						'viewVars': {'contactId': this.id.substring(1,this.id.length)}};
+		
+			var dataString = JSON.stringify(data);
+
+			$.post(
+				'application/controllers/controller.php',
+				{data: dataString},
+				function(view){
+					// Show edit form
+					$("#contents").empty();
+					$("#contents").hide();
+					$("#contents").html(view.viewContent).slideDown("slow");
+				},
+				'json'
+			);
+		}else if( this.id.substring(0,1) == 'd' ){
+
+			if( !confirm('Please confirm that you intend to delete this contact') ){
+				return false;
+			}
+
+			// Delete button pressed
+			var data = {'viewName': 'usrProfile',
+						'viewFormat': 'html',
+						'viewVars': {'usrProfileAction': 'delete',
+									 'contactId': this.id.substring(1,this.id.length)}};
+		
+			var dataString = JSON.stringify(data);
+
+			$.post(
+				'application/controllers/controller.php',
+				{data: dataString},
+				function(view){
+					// Show edit form
+					$("#contents").empty();
+					$("#contents").hide();
+					$("#contents").html(view.viewContent).slideDown("slow");
+				},
+				'json'
+			);
+		}else if( this.id == 'insert' ){
+			var data = {'viewName': 'insert',
+						'viewFormat': 'html',
+						'parentClass': 'usrProfile'};
+		
+			var dataString = JSON.stringify(data);
+	
+			$.post(
+				'application/controllers/controller.php',
+				{data: dataString},
+				function(view){
+					// Show edit form
+					$("#contents").empty();
+					$("#contents").hide();
+					$("#contents").html(view.viewContent).slideDown("slow");
+				},
+				'json'
+			);
+		}
+	});
+}
+</script>
+<input type="button" class="button" id="insert" value="Create New" />
+<div id="edit"></div>
+<table border="0" cellpadding="6" cellspacing="6">
+<tr>
+<td>
+{msg}
+	<div id="contact_list">
+		{contact_list}
+	</div>
+</td>
+
+<td width="150" align="right" valign="top">
+Sort by interest:<br /><br />
+{interests}
+</td>
+</tr>
+</table>

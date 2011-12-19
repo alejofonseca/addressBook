@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>AddressBookApplication</title>
+ 
+<script type="text/javascript" src="public/js/jquery-1.6.4.js"></script>
+<script type="text/javascript" src="public/js/jquery.validate.js"></script>
+<script type="text/javascript" src="public/js/tablesorter.js"></script>
+
+<link rel="stylesheet" type="text/css" href="public/css/stylesheet.css" />
+
+<script type="text/javascript">
+$(document).ready(function(){
+	// Hide div.header
+	$("#header").hide();
+	
+	var data = {'viewName': 'index',
+				'viewFormat': 'html'};
+	
+	var dataString = JSON.stringify(data);
+
+	$.post(
+		'application/controllers/controller.php',
+		{data: dataString},
+		function(view){
+			$("#contents").empty();
+			$("#contents").html(view.viewContent).show();
+		},
+		'json'
+	);
+});
+
+</script>
+
+</head>
+
+<body>
+<center><h1>Address Book Application</h1></center>
+<div id="session"></div>
+<br />
+<div id="contents"></div>
+</body>
+</html>
